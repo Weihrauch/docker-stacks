@@ -40,6 +40,8 @@ ARG miniforge_installer="${miniforge_python}-${miniforge_version}-Linux-${minifo
 # Miniforge checksum
 ARG miniforge_checksum="49dddb3998550e40adc904dae55b0a2aeeb0bd9fc4306869cc4a600ec4b8b47c"
 
+ARG jupyterlab_version="3.0.7"
+
 # Install all OS dependencies for notebook server that starts but lacks all
 # features (e.g., download as all possible file formats)
 ENV DEBIAN_FRONTEND noninteractive
@@ -68,6 +70,7 @@ ENV CONDA_DIR=/opt/conda \
 ENV PATH=$CONDA_DIR/bin:$PATH \
     HOME=/home/$NB_USER \
     CONDA_VERSION="${conda_version}" \
+    JUPYTERLAB_VERSION="${jupyterlab_version}" \
     MINIFORGE_VERSION="${miniforge_version}"
 
 # Copy a script that we will use to correct permissions after running certain commands
@@ -133,7 +136,7 @@ RUN wget --quiet "https://github.com/conda-forge/miniforge/releases/download/${m
 RUN conda install --quiet --yes \
     'notebook=6.2.0' \
     'jupyterhub=1.3.0' \
-    'jupyterlab=3.0.7' && \
+    'jupyterlab=${JUPYTERLAB_VERSION}' && \
     conda clean --all -f -y && \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
