@@ -123,6 +123,9 @@ RUN wget --quiet "https://github.com/conda-forge/miniforge/releases/download/${m
     conda update --all --quiet --yes && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
     conda clean --all -f -y && \
+    find /opt/conda/ -follow -type f -name '*.a' -delete && \
+    find /opt/conda/ -follow -type f -name '*.pyc' -delete && \
+    find /opt/conda/ -follow -type f -name '*.js.map' -delete && \
     rm -rf /home/$NB_USER/.cache/yarn && \
     fix-permissions $CONDA_DIR && \
     fix-permissions /home/$NB_USER
@@ -133,7 +136,7 @@ RUN wget --quiet "https://github.com/conda-forge/miniforge/releases/download/${m
 # Correct permissions
 # Do all this in a single RUN command to avoid duplicating all of the
 # files across image layers when the permissions change
-RUN conda install --quiet --yes \
+RUN conda install --quiet --yes --freeze-installed \
     'notebook=6.2.0' \
     'jupyterhub=1.3.0' \
     "jupyterlab=${JUPYTERLAB_VERSION}" && \
@@ -143,7 +146,11 @@ RUN conda install --quiet --yes \
     jupyter lab clean && \
     rm -rf /home/$NB_USER/.cache/yarn && \
     fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    fix-permissions /home/$NB_USER && \
+    find /opt/conda/ -follow -type f -name '*.a' -delete && \
+    find /opt/conda/ -follow -type f -name '*.pyc' -delete && \
+    find /opt/conda/ -follow -type f -name '*.js.map' -delete
+
 
 EXPOSE 8888
 
